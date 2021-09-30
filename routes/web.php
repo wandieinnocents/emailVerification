@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +19,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// verfification needed 
+
+Route::any('/search', function () {
+    $q = Input::get('q');
+    $user = User::where('name', 'LIKE', '%' . $q . '%')->orWhere('email', 'LIKE', '%' . $q . '%')->get();
+    if (count($user) > 0) {
+        return view('welcome')->withDetails($user)->withQuery($q);
+    } else {
+        // return view('welcome')->withMessage('No Details found. Try to search again !');
+        return "no data found";
+    }
+});
+
+
+// verfification needed
 Auth::routes(['verify' => true]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
